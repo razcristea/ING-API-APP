@@ -28,8 +28,8 @@ class INGapp(requests.Session):
 
     def calculate_signature(httpMethod, endpoint, reqDate, digest, reqId):
         stringToSign = f"""(request-target): {httpMethod} {endpoint}\ndate: {reqDate}\ndigest: SHA-256={digest}\nx-ing-reqid: {reqId}"""
-        signingString = __class__.sign(stringToSign)
-        return signingString
+        signature = __class__.sign(stringToSign)
+        return signature
 
     def sign(stringToSign):
         with open (__class__.sign_key, 'r') as mykey:
@@ -37,9 +37,9 @@ class INGapp(requests.Session):
             signer = PKCS1_v1_5.new(private_key)
             digest = SHA256.new()
             digest.update(stringToSign.encode())
-            signature = signer.sign(digest)
-            signature = b64encode(signature).decode()
-            return signature
+            signingString = signer.sign(digest)
+            signingString = b64encode(signingString).decode()
+            return signingString
 
 
     def consume_api(httpMethod, endpoint, body="", access_token=None):
